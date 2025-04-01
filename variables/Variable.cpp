@@ -69,6 +69,10 @@ namespace var {
         return "null";
     }
 
+    bool Variable::isProtected() const {
+        return protector == VariableProtector::CONSTANT;
+    }
+
     VariableType Variable::add(const VariableType &value, const VariableType &other) {
         if (holds_alternative<string>(value)) {
             string s = convertToString(value);

@@ -11,6 +11,9 @@ namespace var {
     // Deklaracje struktur
     struct NaN {
         bool operator==(const NaN&) const { return true; }
+        std::string toString() const {
+            return "NaN";
+        }
     };
 
     struct Infinity {
@@ -18,6 +21,9 @@ namespace var {
         bool isPositive = true;
         explicit Infinity(bool isPositive = true) : isPositive(isPositive) {}
         bool operator==(const Infinity&) const { return true; }
+        std::string toString() const {
+            return isPositive ? "Infinity" : "-Infinity";
+        }
     };
 
     // Typedefs i aliasy
@@ -47,6 +53,8 @@ namespace var {
         Variable(string name, VariableProtector protector) : name(std::move(name)), protector(protector) {}
         virtual string toString() = 0;
         virtual ~Variable() = default;
+
+        bool isProtected() const;
 
         static VariableType add(const VariableType &value, const VariableType &other);
         static VariableType subtract(VariableType &value, VariableType &other);

@@ -1,4 +1,5 @@
 #include "Handler.h"
+#include "../reader/Reader.h"
 
 Handler::Handler(std::vector<Tree*> &nodes) {
     block = Block();
@@ -8,9 +9,38 @@ Handler::Handler(std::vector<Tree*> &nodes) {
 
         printTree(node);
         VariableType var = handleLine(*node);
+    }
 
-        // print variable
-        // std::cout << "Variable: " << var::convertToString(var) << std::endl;
+    // print variables from block
+    std::cout << "Variables in block:" << std::endl;
+
+    for (const auto &variable : block.variables) {
+        std::cout << "   ";
+
+        if (std::holds_alternative<var::String>(variable)) {
+            var::String str = std::get<var::String>(variable);
+            std::cout << (str.isProtected() ? "const " : "let ");
+            std::cout << str.name << ": (String) \"" << var::convertToString(str.value) << "\"" << std::endl;
+        } else if (std::holds_alternative<var::Number>(variable)) {
+            var::Number num = std::get<var::Number>(variable);
+            std::cout << (num.isProtected() ? "const " : "let ");
+            std::cout << num.name << ": ";
+            if (std::holds_alternative<float>(num.value)) {
+                std::cout << "(Number) " << std::get<float>(num.value) << std::endl;
+            } else if (std::holds_alternative<var::NaN>(num.value)) {
+                std::cout << "(Number) NaN" << std::endl;
+            } else if (std::holds_alternative<var::Infinity>(num.value)) {
+                std::cout << "(Number) " << std::get<var::Infinity>(num.value).toString() << std::endl;
+            }
+        } else if (std::holds_alternative<var::Boolean>(variable)) {
+            var::Boolean boolean = std::get<var::Boolean>(variable);
+            std::cout << (boolean.isProtected() ? "const " : "let ");
+            std::cout << boolean.name << ": (Boolean) " << var::convertToString(boolean.value) << std::endl;
+        } else if (std::holds_alternative<var::Null>(variable)) {
+            var::Null null = std::get<var::Null>(variable);
+            std::cout << (null.isProtected() ? "const " : "let ");
+            std::cout << null.name << ": (Null) Null" << std::endl;
+        }
     }
 }
 
@@ -19,6 +49,19 @@ VariableType Handler::handleLine(Tree& node) {
         std::string name = node.left->value;
         var::VariableProtector protector = node.value == "ASSIGN_PERMANENT" ? var::VariableProtector::CONSTANT : var::VariableProtector::MUTABLE;
         VariableType value = handleLine(*node.right);
+
+        if (std::holds_alternative<std::string>(value))
+            block.variables.push_back(var::String(name, std::get<std::string>(value), protector));
+        if (std::holds_alternative<float>(value))
+            block.variables.push_back(var::Number(name, std::get<float>(value), protector));
+        if (std::holds_alternative<bool>(value))
+            block.variables.push_back(var::Boolean(name, std::get<bool>(value), protector));
+        if (std::holds_alternative<void*>(value))
+            block.variables.push_back(var::Null(name, protector));
+        if (std::holds_alternative<var::NaN>(value))
+            block.variables.push_back(var::Number(name, std::get<var::NaN>(value), protector));
+        if (std::holds_alternative<var::Infinity>(value))
+            block.variables.push_back(var::Number(name, std::get<var::Infinity>(value), protector));
 
         return nullptr;
     } else if (node.value == "ADD") {
@@ -60,6 +103,11 @@ VariableType Handler::handleLine(Tree& node) {
         return std::stof(value);
     } else if (value.size() > 1 && ((value[0] == '"' && value[value.size() - 1] == '"') || (value[0] == '\'' && value[value.size() - 1] == '\''))) {
         return value.substr(1, value.size() - 2);
+    }
+
+    if (Reader::isValidVariableName(node.value)) {
+        auto value = block.getVariableValue(node.value);
+        return value;
     }
 
     return nullptr;
