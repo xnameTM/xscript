@@ -1,15 +1,10 @@
-#pragma once
-#include "Variable.cpp"
-#include <variant>
+#include "Number.h"
 
 namespace var {
-    class Number : public Variable {
-    public:
-        std::variant<float, NaN> value;
-        Number(std::string name, VariableProtector protector, std::variant<float, NaN> value) : Variable(std::move(name), &value, protector), value(value) {}
+    Number::Number(std::string name, std::variant<float, NaN, Infinity> value, VariableProtector protector)
+        : Variable(std::move(name), protector), value(value) {}
 
-        std::string toString() override {
-            return convertToString(&value);
-        }
-    };
+    std::string Number::toString() {
+        return convertToString(&value);
+    }
 }

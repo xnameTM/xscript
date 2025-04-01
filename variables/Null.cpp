@@ -1,13 +1,10 @@
-#pragma once
-#include "Variable.cpp"
+#include "Null.h"
 
 namespace var {
-    class Null : public Variable {
-    public:
-        explicit Null(std::string name, VariableProtector protector) : Variable(std::move(name), &protector) {}
+    Null::Null(std::string name, VariableProtector protector) 
+        : Variable(std::move(name), protector) {}
 
-        std::string toString() override {
-            return "null";
-        }
-    };
+    std::string Null::toString() {
+        return "null";
+    }
 }

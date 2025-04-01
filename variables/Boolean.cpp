@@ -1,14 +1,10 @@
-#pragma once
-#include "Variable.cpp"
+#include "Boolean.h"
 
 namespace var {
-    class Boolean : public Variable {
-    public:
-        bool value;
-        Boolean(std::string name, VariableProtector protector, bool value) : Variable(std::move(name), &protector), value(value) {}
+    Boolean::Boolean(std::string name, bool value, VariableProtector protector) 
+        : Variable(std::move(name), protector), value(value) {}
 
-        std::string toString() override {
-            return value ? "true" : "false";
-        }
-    };
+    std::string Boolean::toString() {
+        return value ? "true" : "false";
+    }
 }

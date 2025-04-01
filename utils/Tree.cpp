@@ -1,17 +1,8 @@
-#pragma once
-#include <iostream>
-#include <string>
+#include "./Tree.h"
 
-class Tree {
-public:
-    std::string value{};
-    Tree* left;
-    Tree* right;
+Tree::Tree(const std::string& value) : value(value), left(nullptr), right(nullptr) {}
 
-    explicit Tree(const std::string& value) : value(value), left(nullptr), right(nullptr) {}
-};
-
-inline void printTree(Tree *node, std::string prefix = "", bool isLast = true) {
+void printTree(Tree *node, std::string prefix, bool isLast) {
     if (!node) return;
 
     std::cout << prefix;

@@ -1,6 +1,6 @@
 #include <iostream>
-#include "reader/Reader.cpp"
-#include "handler/Handler.cpp"
+#include "handler/Handler.h"
+#include "reader/Reader.h"
 
 int main() {
     Reader reader("/Users/xname/Documents/projects/XScript/file.ts");

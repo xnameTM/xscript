@@ -1,17 +1,10 @@
-#pragma once
-#include <utility>
-#include "Variable.cpp"
+#include "String.h"
 
 namespace var {
-    class String : public Variable {
-    public:
-        std::string value;
-        String(std::string name, VariableProtector protector, std::string value) : Variable(std::move(name), &protector), value(std::move(value)) {}
-
-        std::string toString() override {
-            return value;
-        }
-
-
-    };
+    String::String(std::string name, std::string value, VariableProtector protector) 
+        : Variable(std::move(name), protector), value(std::move(value)) {}
+        
+    std::string String::toString() {
+        return value;
+    }
 }
