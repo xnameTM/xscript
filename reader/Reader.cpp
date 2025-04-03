@@ -17,6 +17,11 @@ Tree* Reader::interpret_line(std::string &line) {
 
     std::vector<std::string> tokens = split_preserving_quotes(line);
 
+    for (auto token: tokens) {
+        std::cout << token << "|";
+    }
+    std::cout << std::endl;
+
     Tree *tree(parse_expression(tokens));
 
     // std::cout << "#####################################" << std::endl;
@@ -129,6 +134,8 @@ std::vector<std::string> Reader::split_preserving_quotes(const std::string &s) {
     std::vector<std::string> tokens;
     std::string token;
     char activeQuote = '\0';
+    // Lista operatorów do rozpoznawania
+    const std::string operators = "=+-*/";
 
     for (char c: s) {
         if (c == '"' || c == '\'' || c == '`') {
@@ -155,6 +162,13 @@ std::vector<std::string> Reader::split_preserving_quotes(const std::string &s) {
                 token.clear();
             }
         } else if ((c == '(' || c == ')') && activeQuote == '\0') {
+            if (!token.empty()) {
+                tokens.push_back(token);
+                token.clear();
+            }
+            tokens.push_back(std::string(1, c));
+        } else if (operators.find(c) != std::string::npos && activeQuote == '\0') {
+            // Jeśli to operator i nie jesteśmy w cudzysłowie
             if (!token.empty()) {
                 tokens.push_back(token);
                 token.clear();
